@@ -1,0 +1,149 @@
+/**
+TP5 arithmetique
+
+@author Valentin ESMIEU
+@author Florent MALLARD
+@version Annee scolaire 2014-2015
+*/
+
+
+% ============================================================================= 
+%	add(?,?,?)
+% =============================================================================
+
+add(zero,X,X).
+add(s(X),Y,Z):-
+	add(X,s(Y),Z).
+
+
+% ============================================================================= 
+%	sub(?,?,?)
+% =============================================================================
+
+sub(X,zero,X).
+sub(s(X),s(Y),Res):-
+	sub(X,Y,Res).
+
+% ============================================================================= 
+%	prod(+X,+Y,-Res)
+% =============================================================================
+
+prod(_,zero,zero).
+prod(zero,_,zero).
+prod(s(zero),Y,Y).
+prod(s(X),Y,Res):-
+	prod(X,Y,Accu),
+	add(Y,Accu,Res).
+
+% ============================================================================= 
+%	factorial(+X,-Res)
+% =============================================================================
+
+factorial(zero,zero).
+factorial(s(zero),s(zero)).
+factorial(s(X),Res):-
+	factorial(X,Accu),
+	prod(s(X),Accu,Res).
+
+% ============================================================================= 
+%	add_bin(?X,?Y,?Res)
+% =============================================================================
+
+add_with_carry([],Y,CarryIn,Resul):-
+	!,
+	add_bit(Y,[],CarryIn,Resul,_).
+add_with_carry([B1|L1],[B2|L2],CarryIn,Resul):-
+	add_bit(B1,B2,CarryIn,[Resul|Reste],CarryOut),
+	add_with_carry(L1,L2,CarryOut,Reste).
+
+add_bin(X,Y,Resul) :-
+	add_with_carry(X,Y,0,Resul).
+
+
+% =============================================================================
+
+% entiers
+deux(s(s(zero))).
+trois(s(s(s(zero)))).
+quatre(s(s(s(s(zero))))).
+huit(s(s(s(s(s(s(s(s(zero))))))))).
+
+% Binary representation
+add_bit(0, 0, 0, 0, 0).
+add_bit(0, 0, 1, 1, 0).
+add_bit(0, 1, 0, 1, 0).
+add_bit(0, 1, 1, 0, 1).
+add_bit(1, 0, 0, 1, 0).
+add_bit(1, 0, 1, 0, 1).
+add_bit(1, 1, 0, 0, 1).
+add_bit(1, 1, 1, 1, 1).
+
+% binary integers
+quatre_bin([0,0,1]).
+deux_bin([0,1]).
+
+/* TESTS 
+
+-- add --
+
+?-add(s(zero),s(zero),Res).
+Res = s(s(zero))
+Yes 
+
+?-add(s(zero),zero,Res).
+Res = s(zero)
+Yes 
+
+?-add(s(zero),Z,Res).
+Z = Z
+Res = s(Z)
+Yes 
+
+?-add(s(zero),zero,s(zero)).
+Yes
+
+
+-- sub --
+
+?-quatre(Quatre),trois(Trois),sub(Quatre,Trois,Resultat).
+
+Quatre = s(s(s(s(zero))))
+Trois = s(s(s(zero)))
+Resultat = s(zero)
+Yes 
+
+?-quatre(Quatre),trois(Trois),sub(Trois,Quatre,Resultat).
+No 
+
+?-quatre(Quatre),trois(Trois),sub(Quatre,Inconnue,s(zero)).
+Quatre = s(s(s(s(zero))))
+Trois = s(s(s(zero)))
+Inconnue = s(s(s(zero)))
+Yes 
+
+
+-- prod --
+
+quatre(Quatre),trois(Trois),prod(Quatre,Trois,Resultat).
+
+Quatre = s(s(s(s(zero))))
+Trois = s(s(s(zero)))
+Resultat = s(s(s(s(s(s(s(s(s(s(s(s(zero)))))))))))) (ça fait 12)
+Yes
+
+
+-- factorial --
+
+trois(Trois),factorial(Trois,Resultat).
+Trois = s(s(s(zero)))
+Resultat = s(s(s(s(s(s(zero))))))
+Yes 
+
+deux(Deux),factorial(Deux,Resultat).
+Deux = s(s(zero))
+Resultat = s(s(zero))
+Yes
+
+
+
+*/
