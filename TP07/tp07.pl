@@ -1,18 +1,17 @@
 /**
 TP 7 Base de Données Déductives (BDD) - Prolog
 
-@author Prenom1 NOM1
-@author Prenom2 NOM2
-@version Annee scolaire 20__/20__
+@author Valentin ESMIEU
+@author Florent MALLARD
+@version Annee scolaire 2014/2015
 */
 
+% ===============================================================================
+% ===============================================================================
+% Définition des prédicats
+% ===============================================================================
 
-/*
-===============================================================================
-===============================================================================
- Définition des prédicats
-===============================================================================
-*/
+
 % ============================================================================= 
 % SECTION 1 : Base de données
 % ============================================================================= 
@@ -108,23 +107,20 @@ division(Nom):-
 	livraison(NumFournisseur,NumPiece,_),
 	fournisseurReference(NumFournisseur,Nom,_).
 	
-% ============================================================================= 
+% =============================================================================
+total_piece(NumFourn, Total):-
+	fournisseurReference(NumFourn,_,_),
+	findall(Quantite, livraison(NumFourn, _ , Quantite), Liste),
+	somme(Liste, Total).
 
-mario([],Total).
-mario([Piece|Reste],Accu):-
-	livraison(NumFourn,Piece,Qt)
-	mario([Reste],Acc
-	
+somme([], 0).
+somme([X|R],Total):-
+	somme(R,Total2),
+	Total is X + Total2.
 
-total_piece(NumFourn,Total):-
-	findall(NumFourn,fournisseurReference(_,NumFourn,_),List),
-	mario(List,Total).
-
-	
 % ============================================================================= 
 % SECTION 3 : Au delà de l’algèbre relationnelle
 % ============================================================================= 
-
 
 
 
@@ -207,12 +203,20 @@ Y = table(f6, brown, marseille, p6, 1000)
 
 ===============================================================================
 division(X).
-
 X = dupont
 X = michel
 X = durand
 
 ===============================================================================
+?- total_piece(NumFourn,Total).
+NumFourn = f1
+Total = 600
+
+NumFourn = f2
+Total = 200
+
+NumFourn = f3
+Total = 200
 
 ===============================================================================
 
