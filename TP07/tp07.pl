@@ -122,6 +122,17 @@ somme([X|R],Total):-
 % SECTION 3 : Au delà de l’algèbre relationnelle
 % ============================================================================= 
 
+composants(Composant, ListeRes):-
+	findall(Piece, assemblage(Composant, Piece, _ ),ListeComposants),
+	composants2(ListeComposants, ListeTemp),
+	append(ListeComposants,ListeTemp,ListeRes).
+
+
+composants2([],[]).
+composants2([Composant|Reste],ListeTemp):-
+	findall(Elem,assemblage(Composant, Elem, _),ListeTemp1),
+	composants2(Reste, ListeTemp2),
+	append(ListeTemp1,ListeTemp2, ListeTemp).
 
 
 
@@ -219,7 +230,9 @@ NumFourn = f3
 Total = 200
 
 ===============================================================================
-
+?- composants(voiture, Liste).
+Liste = [porte,roue,moteur,tole,vitre,jante,pneu,piston,soupape]
+Yes
 ===============================================================================
 
 ===============================================================================
