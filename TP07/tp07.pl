@@ -135,6 +135,19 @@ composants2([Composant|Reste],ListeTemp):-
 	append(ListeTemp1,ListeTemp2, ListeTemp).
 
 
+% =============================================================================
+
+nbPieces(Composant, Total):-
+	composants(Composant, ListeElems),
+	nbPieces2(ListeElems, ListeNbPieces),
+	somme(ListeNbPieces, Total).
+
+nbPieces2([], []).
+nbPieces2([ComposantTete|Reste], ListeNbPieces):-
+	assemblage(_,ComposantTete,Nb),
+	nbPieces2(Reste,[Nb|ListeNbPieces]),
+	append(ListeNbPieces, [Nb], ListeNbPieces).
+
 
 /*
 ===============================================================================
