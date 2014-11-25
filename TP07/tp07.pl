@@ -139,14 +139,26 @@ composants2([Composant|Reste],ListeTemp):-
 
 nbPieces(Composant, Total):-
 	composants(Composant, ListeElems),
-	nbPieces2(ListeElems, ListeNbPieces),
-	somme(ListeNbPieces, Total).
+	nbPieces2(ListeElems, Total).
 
-nbPieces2([], []).
-nbPieces2([ComposantTete|Reste], ListeNbPieces):-
+nbPieces2([], 0):-
+	!.
+nbPieces2([ComposantTete|Reste], Total):-
 	assemblage(_,ComposantTete,Nb),
-	nbPieces2(Reste,[Nb|ListeNbPieces]),
-	append(ListeNbPieces, [Nb], ListeNbPieces).
+	not(assemblage(ComposantTete,_, _)),
+	nbPieces2(Reste,Accu),
+	Total is Accu + Nb.
+
+nbPieces2([ComposantTete|Reste], Total):-
+	assemblage(_,ComposantTete,Nb),
+	assemblage(ComposantTete,_, Quantite),
+	nbPieces2(Reste,Accu),
+	Total is Accu + (Nb * Quantite).
+
+% =============================================================================
+
+
+
 
 
 /*
@@ -247,7 +259,13 @@ Total = 200
 Liste = [porte,roue,moteur,tole,vitre,jante,pneu,piston,soupape]
 Yes
 ===============================================================================
+nbPieces(voiture, Total).
+Total = 36
+Yes
 
+nbPieces(moteur, Total).
+Total = 20
+Yes
 ===============================================================================
 
 ===============================================================================
