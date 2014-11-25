@@ -156,7 +156,25 @@ nbPieces2([ComposantTete|Reste], Total):-
 	Total is Accu + (Nb * Quantite).
 
 % =============================================================================
+/*
+quantite_piece(Piece, Total):-
+	findall(Pi,piece(Pi,Piece,_),ListeDesPi),
+	get_quantite(ListeDesPi,Quantite).
 
+get_quantite([Pi|Reste],Quantite):-
+	findall(Nb,livraison(_,Pi,Nb),ListNb),
+	somme(ListNb,Quantite),
+	get_quantite(Reste,Total),
+	Total is Quantite+Nb.
+	
+*/
+
+
+livraison_total(couple(Pi,QuantiteTotale)):-
+	livraison(_,Pi,_),
+	findall(Quantite, livraison(_,Pi,Quantite),ListQuantite),
+	somme(ListQuantite, QuantiteTotale).
+	
 
 
 
