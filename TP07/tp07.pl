@@ -169,13 +169,41 @@ get_quantite([Pi|Reste],Quantite):-
 	
 */
 
-
+% chaque pièce i (notée Pi) peut être fournie par différents fournisseurs.
+% livraison_total rend donc le couple (Pi,Quantité totale de Pi livrée par l'ensemble des fournisseurs).
+% exemple : livraison_total(couple(p1,600)).
 livraison_total(couple(Pi,QuantiteTotale)):-
 	livraison(_,Pi,_),
 	findall(Quantite, livraison(_,Pi,Quantite),ListQuantite),
 	somme(ListQuantite, QuantiteTotale).
-	
 
+% rend la liste de tous les couples (Pi,Quantité totale de Pi livrée par l'ensemble des fournisseurs).
+% sort(+L,-Ltriee) permet de supprimer les doublons (et aussi de rendre la liste plus jolie).
+get_all_couples_of_pi(ListPiTriee):-
+	findall(couple(Pi,Qt), livraison_total(couple(Pi,Qt)),RawListPi),
+	sort(RawListPi, ListPiTriee).
+
+% différents Pi correspondent à la même pièce (p1 et p8 sont une tôle)
+% get_all_pi_for_a_piece rend donc un couple (piece réelle, liste de tous les Pi que peut avoir cette pièce)
+% exemple : get_all_pi_for_a_piece(tole,[p1,p8]).
+get_all_pi_for_a_piece(Nom, ListOfPi):-
+	findall(Pi,piece(Pi,Nom,_),ListOfPi).
+
+
+% rend la quatité finale de piece pour une pièce Nom
+regroup(Nom,QuantiteFinale):-
+	get_all_couples_of_pi(ListOfCouples),
+	get_all_pi_for_a_piece(Nom,ListOfPi),
+	regroup_for_each(ListOfCouples,ListOfPi,QuantiteFinale).
+
+% fonction recursive qui additionne la quantité de pièce de chaque couple si le pi correspond.
+% exemple :
+% ListOfCouples = [couple(p1, 600), couple(p2, 800), couple(p3, 200),etc.
+% ListOfPi = [p1, p8] (pour la piece tole)
+% regroup va examiner chaque couple de ListOfCouple et additionner les quantité si le pi correspond à l'un de ceux de ListOfPi.
+regroup_for_each(ListOfCouples,ListOfPi,Quantite):-
+	% hardcore
+	!.
 
 
 
