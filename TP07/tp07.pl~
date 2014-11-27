@@ -1,18 +1,17 @@
 /**
 TP 7 Base de Données Déductives (BDD) - Prolog
 
-@author Prenom1 NOM1
-@author Prenom2 NOM2
-@version Annee scolaire 20__/20__
+@author Valentin ESMIEU
+@author Florent MALLARD
+@version Annee scolaire 2014/2015
 */
 
+% ===============================================================================
+% ===============================================================================
+% Définition des prédicats
+% ===============================================================================
 
-/*
-===============================================================================
-===============================================================================
- Définition des prédicats
-===============================================================================
-*/
+
 % ============================================================================= 
 % SECTION 1 : Base de données
 % ============================================================================= 
@@ -108,23 +107,74 @@ division(Nom):-
 	livraison(NumFournisseur,NumPiece,_),
 	fournisseurReference(NumFournisseur,Nom,_).
 	
-% ============================================================================= 
+% =============================================================================
+total_piece(NumFourn, Total):-
+	fournisseurReference(NumFourn,_,_),
+	findall(Quantite, livraison(NumFourn, _ , Quantite), Liste),
+	somme(Liste, Total).
 
-mario([],Total).
-mario([Piece|Reste],Accu):-
-	livraison(NumFourn,Piece,Qt)
-	mario([Reste],Acc
-	
+somme([], 0).
+somme([X|R],Total):-
+	somme(R,Total2),
+	Total is X + Total2.
 
-total_piece(NumFourn,Total):-
-	findall(NumFourn,fournisseurReference(_,NumFourn,_),List),
-	mario(List,Total).
-
-	
 % ============================================================================= 
 % SECTION 3 : Au delà de l’algèbre relationnelle
 % ============================================================================= 
 
+composants(Composant, ListeRes):-
+	findall(Piece, assemblage(Composant, Piece, _ ),ListeComposants),
+	composants2(ListeComposants, ListeTemp),
+	append(ListeComposants,ListeTemp,ListeRes).
+
+
+composants2([],[]).
+composants2([Composant|Reste],ListeTemp):-
+	findall(Elem,assemblage(Composant, Elem, _),ListeTemp1),
+	composants2(Reste, ListeTemp2),
+	append(ListeTemp1,ListeTemp2, ListeTemp).
+
+
+% =============================================================================
+
+nbPieces(Composant, Total):-
+	composants(Composant, ListeElems),
+	nbPieces2(ListeElems, Total).
+
+nbPieces2([], 0):-
+	!.
+nbPieces2([ComposantTete|Reste], Total):-
+	assemblage(_,ComposantTete,Nb),
+	not(assemblage(ComposantTete,_, _)),
+	nbPieces2(Reste,Accu),
+	Total is Accu + Nb.
+
+nbPieces2([ComposantTete|Reste], Total):-
+	assemblage(_,ComposantTete,Nb),
+	assemblage(ComposantTete,_, Quantite),
+	nbPieces2(Reste,Accu),
+	Total is Accu + (Nb * Quantite).
+
+% =============================================================================
+/*
+quantite_piece(Piece, Total):-
+	findall(Pi,piece(Pi,Piece,_),ListeDesPi),
+	get_quantite(ListeDesPi,Quantite).
+
+get_quantite([Pi|Reste],Quantite):-
+	findall(Nb,livraison(_,Pi,Nb),ListNb),
+	somme(ListNb,Quantite),
+	get_quantite(Reste,Total),
+	Total is Quantite+Nb.
+	
+*/
+
+
+livraison_total(couple(Pi,QuantiteTotale)):-
+	livraison(_,Pi,_),
+	findall(Quantite, livraison(_,Pi,Quantite),ListQuantite),
+	somme(ListQuantite, QuantiteTotale).
+	
 
 
 
@@ -207,17 +257,33 @@ Y = table(f6, brown, marseille, p6, 1000)
 
 ===============================================================================
 division(X).
-
 X = dupont
 X = michel
 X = durand
 
 ===============================================================================
+?- total_piece(NumFourn,Total).
+NumFourn = f1
+Total = 600
+
+NumFourn = f2
+Total = 200
+
+NumFourn = f3
+Total = 200
 
 ===============================================================================
-
+?- composants(voiture, Liste).
+Liste = [porte,roue,moteur,tole,vitre,jante,pneu,piston,soupape]
+Yes
 ===============================================================================
+nbPieces(voiture, Total).
+Total = 36
+Yes
 
+nbPieces(moteur, Total).
+Total = 20
+Yes
 ===============================================================================
 
 ===============================================================================
