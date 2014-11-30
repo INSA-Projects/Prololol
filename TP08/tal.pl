@@ -282,7 +282,7 @@ Arbre = phrase(
  Question 2.3 : accord en genre et en nombre
 ===============================================================================
 */
-
+/*
 % ---  phrase simple ---
 phrase_simple(GrpN,phrase(AGrpN,AVerb)):- 
 	gp_nominal(GrpN,Verb,AGrpN,Genre,Nombre),
@@ -391,7 +391,7 @@ pronom([qui|Suite],Suite,pronom(qui),masc,sing).
 pronom([qui|Suite],Suite,pronom(qui),masc,plur).
 pronom([qui|Suite],Suite,pronom(qui),fem,sing).
 pronom([qui|Suite],Suite,pronom(qui),fem,plur).
-
+*/
 /* 
 ----------------------------------------------------------------------------------------------------
  [Tests]
@@ -421,3 +421,123 @@ yes
 no
 ------------------------------------------------------------------------------------------------------
 */
+/*   
+===============================================================================
+ Question 2.4 : analyse sémantique
+===============================================================================
+*/
+
+% ---  phrase simple ---
+phrase_simple(GrpN,phrase(AGrpN,AVerb)):- 
+	gp_nominal(GrpN,Verb,AGrpN,Genre,Nombre,Sujet),
+	gp_verbal(Verb,[],AVerb,Genre,Nombre,Sujet,rien).
+	
+
+phrase_simple(GrpN,phrase(AGrpN,AVerb,AGrP)):- 
+	gp_nominal(GrpN,Verb,AGrpN,Genre,Nombre,Sujet),
+	gp_verbal(Verb,GroupPrep,AVerb,Genre,Nombre,Sujet,_),
+	gp_prep(GroupPrep,[],AGrP).
+
+	
+	
+% ---  gp_nominal ---
+gp_nominal(Article,Suite,gp_nom(AArticle,ANomCom),Genre,Nombre,Sujet):-
+	article(Article,NomCom,AArticle,Genre,Nombre),
+	nom_commun(NomCom,Suite,ANomCom,Genre,Nombre,Sujet).
+
+
+gp_nominal(Article,Suite,gp_nom(AArticle,ANomCom,ARelat),Genre,Nombre,Sujet):-
+	article(Article,NomCom,AArticle,Genre,Nombre),
+	nom_commun(NomCom,Relat,ANomCom,Genre,Nombre,Sujet),
+	relatif(Relat,Suite,ARelat,Genre,Nombre).
+
+gp_nominal(Article,Suite,gp_nom(AArticle,ANomCom,AAdj),Genre,Nombre,Sujet):-
+	article(Article,NomCom,AArticle,Genre,Nombre),
+	nom_commun(NomCom,Adj,ANomCom,Genre,Nombre,Sujet),
+	adj(Adj,Suite,AAdj,Genre,Nombre).
+
+gp_nominal(Article,Suite,gp_nom(AArticle,ANomCom,AAdj,ARelat),Genre,Nombre,Sujet):-
+	article(Article,NomCom,AArticle,Genre,Nombre),
+	nom_commun(NomCom,Adj,ANomCom,Genre,Nombre,Sujet),
+	adj(Adj,Relat,AAdj,Genre,Nombre),
+	relatif(Relat,Suite,ARelat,Genre,Nombre).
+
+gp_nominal(NomP,Suite,gp_nom(ANomP),Genre,Nombre,Sujet):-
+	nom_propre(NomP,Suite,ANomP,Genre,Nombre,Sujet).
+
+gp_nominal(NomP,Suite,gp_nom(ANomP,ARelat),Genre,Nombre,Sujet):-
+	nom_propre(NomP,Relat,ANomP,Genre,Nombre,Sujet),
+	relatif(Relat,Suite,ARelat,Genre,Nombre).
+	
+	
+% ---  groupe_verbal ---
+gp_verbal(Verbe,Suite,gp_verb(AVerbe),Genre,Nombre,Sujet,Complement):-
+	verbe(Verbe,Suite,AVerbe,Genre,Nombre,Sujet,Complement).
+
+gp_verbal(Verbe,Suite,gp_verb(AVerbe,AGrpNom),Genre,Nombre,Sujet,Complement):-
+	verbe(Verbe,GrpNom,AVerbe,Genre,Nombre,Sujet,Complement),
+	gp_nominal(GrpNom,Suite,AGrpNom,_,_,Complement).
+	
+
+	
+% ---  groupe prepositionnel ---
+gp_prep(GroupPrep,Suite,gp_prep(APrep,AGrpN)):-
+	prep(GroupPrep,GroupNom,APrep,Genre,Nombre,Prepositionnel),
+	gp_nominal(GroupNom,Suite,AGrpN,Genre,Nombre,Prepositionnel).
+
+	
+% ---  relatif ---
+relatif(Pronom,Suite,relat(APronom,AGpV),Genre,Nombre):-
+	pronom(Pronom,Verb,APronom,Genre,Nombre),
+	gp_verbal(Verb,Suite,AGpV,Genre,Nombre,_,_).
+	
+
+% ---  terminaux ---
+
+article([le|Suite],Suite,art(le),masc,sing).
+article([la|Suite],Suite,art(la),fem,sing).
+article([les|Suite],Suite,art(les),masc,plur).
+article([les|Suite],Suite,art(les),fem,plur).
+article([un|Suite],Suite,art(un),masc,sing).
+article([une|Suite],Suite,art(une),fem,sing).
+
+nom_commun([chien|Suite],Suite,nom_commun(chien),masc,sing,animal).
+nom_commun([enfants|Suite],Suite,nom_commun(enfants),masc,plur,humain).
+nom_commun([enfants|Suite],Suite,nom_commun(enfants),fem,plur,humain).
+nom_commun([steack|Suite],Suite,nom_commun(steack),masc,sing,mangeable).
+nom_commun([pull|Suite],Suite,nom_commun(pull),masc,sing,vetement).
+nom_commun([femme|Suite],Suite,nom_commun(femme),fem,sing,humain).
+nom_commun([rue|Suite],Suite,nom_commun(rue),fem,sing,lieu).
+
+nom_propre([paul|Suite],Suite,nom_propre(paul),masc,sing,humain).
+
+adj([noir|Suite],Suite,adj(noir),masc,sing).
+
+prep([dans|Suite],Suite,prep(dans),masc,sing,lieu).
+prep([dans|Suite],Suite,prep(dans),masc,plur,lieu).
+prep([dans|Suite],Suite,prep(dans),fem,sing,lieu).
+prep([dans|Suite],Suite,prep(dans),fem,plur,lieu).
+
+verbe([aboie|Suite],Suite,verbe(aboie),masc,sing,animal,rien).
+verbe([mange|Suite],Suite,verbe(mange),masc,sing,humain,mangeable).
+verbe([mange|Suite],Suite,verbe(mange),masc,sing,animal,mangeable).
+verbe([porte|Suite],Suite,verbe(porte),masc,sing,humain,vetement).
+verbe([jouent|Suite],Suite,verbe(jouent),masc,plur,humain,rien).
+verbe([marche|Suite],Suite,verbe(marche),masc,sing,humain,lieu).
+verbe([jouent|Suite],Suite,verbe(jouent),masc,plur,animal,rien).
+verbe([marche|Suite],Suite,verbe(marche),masc,sing,animal,lieu).
+
+verbe([aboie|Suite],Suite,verbe(aboie),fem,sing,animal,rien).
+verbe([mange|Suite],Suite,verbe(mange),fem,sing,humain,mangeable).
+verbe([mange|Suite],Suite,verbe(mange),fem,sing,animal,mangeable).
+verbe([porte|Suite],Suite,verbe(porte),fem,sing,humain,vetement).
+verbe([jouent|Suite],Suite,verbe(jouent),fem,plur,humain,rien).
+verbe([marche|Suite],Suite,verbe(marche),fem,sing,humain,lieu).
+verbe([jouent|Suite],Suite,verbe(jouent),fem,plur,animal,rien).
+verbe([marche|Suite],Suite,verbe(marche),fem,sing,animal,lieu).
+
+pronom([qui|Suite],Suite,pronom(qui),masc,sing).
+pronom([qui|Suite],Suite,pronom(qui),masc,plur).
+pronom([qui|Suite],Suite,pronom(qui),fem,sing).
+pronom([qui|Suite],Suite,pronom(qui),fem,plur).
+
