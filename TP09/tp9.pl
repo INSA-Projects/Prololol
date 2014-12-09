@@ -104,6 +104,8 @@ Yes
 
 ---------------------------------------------------------------------------------------------------
 
-
+lesTps([pluto,riri,fifi,loulou],Tps).
+Tps = [[(pluto, riri)], [(pluto, fifi)], [(pluto, loulou)], [(riri, fifi)], [(riri, loulou)], [(fifi, loulou)]]
+Yes
 
 */
