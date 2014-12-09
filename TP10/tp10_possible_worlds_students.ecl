@@ -45,7 +45,7 @@ sub_list([Someone,Somebody|Others],Res):-
 
 /*
 ===============================================================================
- Question 1.2 : sub_list(+ListPeople,-SubList)
+ Question 1.3 : predX(+ListLikes)
 ===============================================================================
 */
 
@@ -99,7 +99,18 @@ prop7([Someone|Others],ListLikes):-
 prop7([],_).
 
 
+/*
+===============================================================================
+ Question 1.3 : predX(+ListLikes)
+===============================================================================
+*/
 
+possible_worlds(Worlds):-
+	persons(ListPersons),
+	make_all_pairs(ListPersons,Pairs),
+	sub_list(Pairs,Worlds).
+	% quelle suite ?
+	
 
 % dana likes cody
 % bess does not like dana

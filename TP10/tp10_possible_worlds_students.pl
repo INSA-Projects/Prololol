@@ -43,6 +43,74 @@ sub_list([Someone,Somebody|Others],Res):-
 sub_list([Someone,Somebody|Others],Res):-
 	sub_list([Somebody|Others],Res).
 
+/*
+===============================================================================
+ Question 1.3 : predX(+ListLikes)
+===============================================================================
+*/
+
+pred1(ListLikes):-
+	member(likes(dana,cody),ListLikes).
+% ---------------------------------------------
+pred2(ListLikes):-
+	not(member(likes(bess,dana),ListLikes)).
+% ---------------------------------------------
+pred3(ListLikes):-
+	not(member(likes(cody,abby),ListLikes)).
+% ---------------------------------------------
+pred4(ListLikes):-
+	prop4(ListLikes,ListLikes).
+
+prop4([likes(A,B)|Others],ListLikes):-
+	member(likes(B,A),ListLikes),
+	prop4(Others,ListLikes).
+prop([],_).
+% ---------------------------------------------
+pred5(ListLikes):-
+	prop5(ListLikes,ListLikes).
+
+prop5([likes(A,bess)|Others],ListLikes):-
+	member(likes(abby,A),ListLikes),
+	prop5(Others,ListLikes).
+prop5([likes(A,B)|Others],ListLikes):-
+	\==(B,bess),
+	prop5(Others,ListLikes).
+prop5([],_).
+% ---------------------------------------------
+pred6(ListLikes):-
+	prop6(ListLikes,ListLikes).
+
+prop6([likes(bess,B)|Others],ListLikes):-
+	member(likes(dana,B),ListLikes),
+	prop6(Others,ListLikes).
+prop6([likes(A,B)|Others],ListLikes):-
+	\==(A,bess),
+	prop6(Others,ListLikes).
+prop6([],_).
+% ---------------------------------------------
+persons([dana,cody,bess,abby]).
+pred7(ListLikes):-
+	persons(ListPersons),
+	prop7(ListPersons,ListLikes).
+
+prop7([Someone|Others],ListLikes):-
+	member(likes(Someone,_),ListLikes),
+	prop7(Others,ListLikes).
+prop7([],_).
+
+
+/*
+===============================================================================
+ Question 1.3 : predX(+ListLikes)
+===============================================================================
+*/
+
+possible_worlds(Worlds):-
+	persons(ListPersons),
+	make_all_pairs(ListPersons,Pairs),
+	sub_list(Pairs,Worlds).
+	% quelle suite ?
+	
 
 % dana likes cody
 % bess does not like dana
