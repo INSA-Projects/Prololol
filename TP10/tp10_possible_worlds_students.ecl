@@ -35,11 +35,70 @@ sub_list(List,List).
 sub_list([Someone|_],[Someone]).
 sub_list([_|Others],Somebody):-
 	sub_list(Others,Somebody).
+sub_list([Someone|Others],[Someone|Res]):-
+	sub_list(Others,Res).
 sub_list([Someone,Somebody|Others],[Someone,Somebody]).
 sub_list([Someone,Somebody|Others],Res):-
 	sub_list([Someone|Others],Res).
 sub_list([Someone,Somebody|Others],Res):-
 	sub_list([Somebody|Others],Res).
+
+/*
+===============================================================================
+ Question 1.2 : sub_list(+ListPeople,-SubList)
+===============================================================================
+*/
+
+pred1(ListLikes):-
+	member(likes(dana,cody),ListLikes).
+---------------------------------------------
+pred2(ListLikes):-
+	not(member(likes(bess,dana),ListLikes)).
+---------------------------------------------
+pred3(ListLikes):-
+	not(member(likes(cody,abby),ListLikes)).
+---------------------------------------------
+pred4(ListLikes):-
+	prop4(ListLikes,ListLikes).
+
+prop4([likes(A,B)|Others],ListLikes):-
+	member(likes(B,A),ListLikes),
+	prop4(Others,ListLikes).
+prop([],_).
+---------------------------------------------
+pred5(ListLikes):-
+	prop5(ListLikes,ListLikes).
+
+prop5([likes(A,bess)|Others],ListLikes):-
+	member(likes(abby,A),ListLikes),
+	prop5(Others,ListLikes).
+prop5([likes(A,B)|Others],ListLikes):-
+	\==(B,bess),
+	prop5(Others,ListLikes).
+prop5([],_).
+---------------------------------------------
+pred6(ListLikes):-
+	prop6(ListLikes,ListLikes).
+
+prop6([likes(bess,B)|Others],ListLikes):-
+	member(likes(dana,B),ListLikes),
+	prop6(Others,ListLikes).
+prop6([likes(A,B)|Others],ListLikes):-
+	\==(A,bess),
+	prop6(Others,ListLikes).
+prop6([],_).
+---------------------------------------------
+persons([dana,cody,bess,abby]).
+pred7(ListLikes):-
+	persons(ListPersons),
+	prop7(ListPersons,ListLikes).
+
+prop7([Someone|Others],ListLikes):-
+	member(likes(Someone,_),ListLikes),
+	prop7(Others,ListLikes).
+prop7([],_).
+
+
 
 
 % dana likes cody
