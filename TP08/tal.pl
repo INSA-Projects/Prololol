@@ -493,7 +493,6 @@ relatif(Pronom,Suite,relat(APronom,AGpV),Genre,Nombre):-
 	
 
 % ---  terminaux ---
-
 article([le|Suite],Suite,art(le),masc,sing).
 article([la|Suite],Suite,art(la),fem,sing).
 article([les|Suite],Suite,art(les),masc,plur).
@@ -540,4 +539,3 @@ pronom([qui|Suite],Suite,pronom(qui),masc,sing).
 pronom([qui|Suite],Suite,pronom(qui),masc,plur).
 pronom([qui|Suite],Suite,pronom(qui),fem,sing).
 pronom([qui|Suite],Suite,pronom(qui),fem,plur).
-
