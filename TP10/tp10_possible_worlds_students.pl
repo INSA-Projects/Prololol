@@ -28,20 +28,11 @@ make_all_pairs_for_someone(Someone,[Somebody|Others],ListLikes,Res):-
  Question 1.2 : sub_list(+ListPeople,-SubList)
 ===============================================================================
 */
-
-sub_list([],[]):-
-	!.
-sub_list(List,List).
-sub_list([Someone|_],[Someone]).
-sub_list([_|Others],Somebody):-
-	sub_list(Others,Somebody).
+sub_list([],[]).
 sub_list([Someone|Others],[Someone|Res]):-
 	sub_list(Others,Res).
-sub_list([Someone,Somebody|_],[Someone,Somebody]).
-sub_list([Someone,_|Others],Res):-
-	sub_list([Someone|Others],Res).
-sub_list([_,Somebody|Others],Res):-
-	sub_list([Somebody|Others],Res).
+sub_list([_|Others],Somebody):-
+	sub_list(Others,Somebody).
 
 /*
 ===============================================================================
@@ -65,28 +56,12 @@ pred3(ListLikes):-
 	
 	
 % -- Personne n'aime quelqu'un qui ne l'aime pas
-pred4(ListLikes):-
-	prop4(ListLikes,ListLikes).
-
-prop4([likes(A,B)|Others],ListLikes):-
-	member(likes(B,A),ListLikes),
-	prop4(Others,ListLikes).
-prop([],_).
-
-
-
-
-
-% version valou
 pred4_vv(ListLikes):-
 	not(pred4_negative(ListLikes)).
 	
 pred4_negative(ListLikes):-
 	member(likes(A,B),ListLikes),
 	not(member(likes(B,A),ListLikes)).
-	
-
-
 	
 	
 % -- Abby aime tous ceux qui aiment Bess
@@ -102,14 +77,13 @@ prop5([likes(_,B)|Others],ListLikes):-
 prop5([],_).
 
 
-% version valou
+% version 2
 pred5_vv(ListLikes):-
 	not(pred5_negative(ListLikes)).
 	
 pred5_negative(ListLikes):-
 	member(likes(A,bess),ListLikes),
 	not(member(likes(abby,A),ListLikes)).
-	
 
 
 % -- Dana aime tous ceux que Bess aime
@@ -126,7 +100,7 @@ prop6([],_).
 
 
 
-% version valou
+% version 2
 pred6_vv(ListLikes):-
 	not(pred6_negative(ListLikes)).
 	
@@ -137,19 +111,6 @@ pred6_negative(ListLikes):-
 	
 
 % -- Tout le monde aime quelqu'un
-persons([dana,cody,bess,abby]).
-pred7(ListLikes):-
-	persons(ListPersons),
-	prop7(ListPersons,ListLikes).
-
-prop7([Someone|Others],ListLikes):-
-	member(likes(Someone,_),ListLikes),
-	prop7(Others,ListLikes).
-prop7([],_).
-
-
-
-% version valou
 pred7_vv(ListLikes):-
 	not(pred7_negative(ListLikes)).
 	
@@ -168,21 +129,14 @@ pred7_negative(ListLikes):-
 
 person(abby).
 person(bess).
-person(dana).
-person(cody).
+%person(dana).
+%person(cody).
 
 possible_worlds(World):-
 	findall(People,person(People),Everybody),
 	make_all_pairs(Everybody,Pairs),
 	sub_list(Pairs,World),
-	pred1(World),
-	pred2(World),
-	pred3(World),
-	pred4(World),
-	pred5(World),
-	pred6(World),
-	pred7(World).
-	
+	not(member(likes(A,A),World)).
 	
 
 /*
@@ -191,7 +145,7 @@ possible_worlds(World):-
 ===============================================================================
 */
 
-% nécessite d'améliorer sub_list...
+% ok
 
 /*
 ===============================================================================
@@ -204,10 +158,10 @@ test_possible_worlds :-
         writeln(World),
         fail.
 	
-	
-
-
-
+% La complexité semble être en 2 puissance n*(n-1), où n est le nombre de personnes.
+% 1 personne  : 2^(1*0) = 1 monde possible
+% 2 personnes : 2^(2*1) = 4 mondes possibles
+% 4 personnes : 2^(4*3) = 4096 mondes possibles
 
 /* 
 ----------------------------------------------------------------------------------------------------
@@ -272,13 +226,17 @@ no
 
 ?- pred7_vv([likes(cody,bertrand),likes(bertrand,bess),likes(bess,cody)]).
 yes
-?- pred7([likes(cody,bertrand),likes(bertrand,bess)]).
-no
 ?- pred7_vv([likes(cody,bertrand),likes(bertrand,bess)]).
 no
 ----------------------------------------------------------------------------------------------------
-
-
+Pour 2 personnes :
+possible_worlds(World).
+World = [likes(bess, abby), likes(abby, bess)]
+Yes (0.00s cpu, solution 1, maybe more) ? ;
+World = [likes(bess, abby)]
+Yes (0.00s cpu, solution 2, maybe more) ? ;
+World = [likes(abby, bess)]
+Yes (0.00s cpu, solution 3, maybe more) ? ;
+World = []
+Yes
 */
-not(P) :- call(P), !, fail.
-not(P). 
