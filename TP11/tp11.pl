@@ -34,10 +34,22 @@ stones([stone(2, 2), stone(4, 6), stone(1, 2), stone(2, 4), stone(6, 2)]).
 
 /*
 ===============================================================================
- Question 1.1 : dominos(+Stones,+Partiak,-Res)
+ Question 1.2 : dominos(+Stones,+Partial,-Res)
 ===============================================================================
 */
-chains(
+chains([],[],[]).
+chains([],Partial,Partial).
+chains([stone(X,Y)|ResteS],[chains([X|Z]|ResteP)|ResteC],Res):-
+    \==(X,Y),
+    chains(ResteS,chains([[Y,X|Z]|ResteP]),Res).
+chains([stone(X,Y)|ResteS],[chains([Y|Z]|ResteP)|ResteC],Res):-
+    \==(X,Y),
+    chains(ResteS,chains([[X,Y|Z]|ResteP]),Res).
+chains([stone(X,Y)|ResteS],[chains([V|Z]|ResteP)|ResteC],Res):-
+    \==(X,Y),
+    \==(X,V),
+    \==(Y,V),
+    chains(ResteS,chains([[Y,X|Z]|ResteP]),Res).
 
 
 
