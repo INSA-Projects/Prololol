@@ -37,19 +37,61 @@ stones([stone(2, 2), stone(4, 6), stone(1, 2), stone(2, 4), stone(6, 2)]).
  Question 1.2 : dominos(+Stones,+Partial,-Res)
 ===============================================================================
 */
-chains([],[],[]).
-chains([],Partial,Partial).
-chains([stone(X,Y)|ResteS],[chains([X|Z]|ResteP)|ResteC],Res):-
-    \==(X,Y),
-    chains(ResteS,chains([[Y,X|Z]|ResteP]),Res).
-chains([stone(X,Y)|ResteS],[chains([Y|Z]|ResteP)|ResteC],Res):-
-    \==(X,Y),
-    chains(ResteS,chains([[X,Y|Z]|ResteP]),Res).
-chains([stone(X,Y)|ResteS],[chains([V|Z]|ResteP)|ResteC],Res):-
-    \==(X,Y),
-    \==(X,V),
-    \==(Y,V),
-    chains(ResteS,chains([[Y,X|Z]|ResteP]),Res).
+
+
+% --- add_stone_to_chain : ajoute un domino à une chaine
+% domino seul
+add_stone_to_chain(stone(X,X),[],[chain([X],[X]),chain([X],[double])]).
+add_stone_to_chain(stone(X,Y),[],[chain([X],[Y])]).
+
+% domino double correspondant à la tête de L2
+add_stone_to_chain(stone(X,X),chain(L1,[X|L2]),[chain(L1,[X,X|L2]),chain([X],[double])]):-
+	!.
+% domino double correspondant à la tête de L1
+add_stone_to_chain(stone(X,X),chain([X|L1],L2),[chain([X,X|L1],[L2]),chain([X],[double])]):-
+	!.
+
+% X correspond à la tête de L1
+add_stone_to_chain(stone(X,Y),chain([X|L1],L2),[chain([Y,X|L1],L2)]).
+add_stone_to_chain(stone(Y,X),chain([X|L1],L2),[chain([Y,X|L1],L2)]).
+
+% X correspond à la tête de L2
+add_stone_to_chain(stone(X,Y),chain(L1,[X|L2]),[chain(L1,[Y,X|L2])]).
+add_stone_to_chain(stone(Y,X),chain(L1,[X|L2]),[chain(L1,[Y,X|L2])]).
+
+
+% --- add_stone_to_list_of_chains : ajoute la pierre à l'une des chaine de la liste
+
+add_stone_to_list_of_chains(Stone,[],Res):-
+	add_stone_to_chain(Stone,[],Res),
+	!.
+
+add_stone_to_list_of_chains(Stone,[Chain|OtherChains],[Res|OtherChains]):-
+	add_stone_to_chain(Stone,Chain,Res),
+	!.
+
+add_stone_to_list_of_chains(Stone,[Chain|OtherChains],[Chain|Res]):-
+	add_stone_to_list_of_chains(Stone,OtherChains,Res).
+		
+% --- chains : ajoute toutes les pierres
+chains([Stone],ListOfChains,Res):-
+	add_stone_to_list_of_chains(Stone,ListOfChains,Res),
+	!.
+
+chains([Stone|OtherStones],ListOfChains,Res):-
+	add_stone_to_list_of_chains(Stone,ListOfChains,Temp),
+	chains(OtherStones,Temp,Res),
+	!.
+
+chains([_|OtherStones],ListOfChains,Res):-
+	chains(OtherStones,ListOfChains,Res).
+
+% --- domino ---
+domino(Res):-
+	stones(S),
+	chains(S,[],Res).
+
+
 
 
 
