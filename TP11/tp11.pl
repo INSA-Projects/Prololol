@@ -66,8 +66,9 @@ add_stone_to_list_of_chains(Stone,[],Res):-
 	add_stone_to_chain(Stone,[],Res),
 	!.
 
-add_stone_to_list_of_chains(Stone,[Chain|OtherChains],[Res|OtherChains]):-
-	add_stone_to_chain(Stone,Chain,Res),
+add_stone_to_list_of_chains(Stone,[Chain|OtherChains],Res):-
+	add_stone_to_chain(Stone,Chain,Temp),
+	append(Temp,OtherChains,Res),
 	!.
 
 add_stone_to_list_of_chains(Stone,[Chain|OtherChains],[Chain|Res]):-
